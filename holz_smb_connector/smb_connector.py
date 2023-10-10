@@ -41,9 +41,9 @@ class SMBConnector:
             remote_name="target_host",
             is_direct_tcp=True,
         )
-        self.shared_folder = self.settings.shared_folder
-        self.work_dir = self.settings.work_dir
-        self.host = self.settings.host
+        self.shared_folder = self.settings.shared_folder.strip()
+        self.work_dir = self.settings.work_dir.strip()
+        self.host = self.settings.host.strip()
         self.port = self.settings.port
 
     def __enter__(self):
