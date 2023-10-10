@@ -35,8 +35,8 @@ class SMBConnector:
 
     def __init__(self):
         self.conn = SMBConnection(
-            username=self.settings.username,
-            password=self.settings.password,
+            username=self.settings.username.strip(),
+            password=self.settings.password.strip(),
             my_name="server_host",
             remote_name="target_host",
             is_direct_tcp=True,
