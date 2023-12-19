@@ -26,25 +26,30 @@ class SMBFile:
 
 
 class SMBConnector:
-    settings: SMBSettings
+    settings: SMBSettings | None = None
 
-    def __init_subclass__(cls, **kwargs):
-        if not hasattr(cls, "settings"):
-            raise NotImplementedError('Attribute "settings" must be implemented.')
-        super().__init_subclass__(**kwargs)
-
-    def __init__(self):
+    def __init__(
+        self,
+        username: str | None = None,
+        password: str | None = None,
+        host: str | None = None,
+        port: str | None = None,
+        shared_folder: str | None = None,
+        work_dir: str | None = None,
+    ):
         self.conn = SMBConnection(
-            username=self.settings.username.strip(),
-            password=self.settings.password.strip(),
+            username=username if username else self.settings.username.strip(),
+            password=password if password else self.settings.password.strip(),
             my_name="server_host",
             remote_name="target_host",
             is_direct_tcp=True,
         )
-        self.shared_folder = self.settings.shared_folder.strip()
-        self.work_dir = self.settings.work_dir.strip()
-        self.host = self.settings.host.strip()
-        self.port = self.settings.port
+        self.shared_folder = (
+            shared_folder if shared_folder else self.settings.shared_folder.strip()
+        )
+        self.work_dir = work_dir if work_dir else self.settings.work_dir.strip()
+        self.host = host if host else self.settings.host.strip()
+        self.port = port if port else self.settings.port
 
     def __enter__(self):
         assert self.conn.connect(ip=self.host, port=self.port)
