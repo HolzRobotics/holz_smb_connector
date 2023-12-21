@@ -30,18 +30,23 @@ class SMBConnector:
 
     def __init__(
         self,
+        remote_name: str = "SHARE2",
+        my_name: str = "guest",
         username: str | None = None,
         password: str | None = None,
         host: str | None = None,
         port: str | None = None,
         shared_folder: str | None = None,
         work_dir: str | None = None,
+
     ):
+        self.remote_name = remote_name
+        self.my_name = my_name
         self.conn = SMBConnection(
             username=username if username else self.settings.username.strip(),
             password=password if password else self.settings.password.strip(),
-            my_name="server_host",
-            remote_name="target_host",
+            my_name=self.my_name,
+            remote_name=self.remote_name,
             is_direct_tcp=True,
         )
         self.shared_folder = (
@@ -50,6 +55,7 @@ class SMBConnector:
         self.work_dir = work_dir if work_dir else self.settings.work_dir.strip()
         self.host = host if host else self.settings.host.strip()
         self.port = port if port else self.settings.port
+        
 
     def __enter__(self):
         assert self.conn.connect(ip=self.host, port=self.port)
