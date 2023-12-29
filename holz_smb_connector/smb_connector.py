@@ -26,7 +26,7 @@ class SMBFile:
 
 
 class SMBConnector:
-    settings: SMBSettings | None = None
+    settings: SMBSettings | None = SMBSettings()
 
     def __init__(
         self,
