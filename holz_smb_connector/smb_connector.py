@@ -10,10 +10,10 @@ from smb.SMBConnection import SMBConnection
 
 
 class SMBSettings(BaseSettings):
-    username: str
-    password: str
-    shared_folder: str
-    work_dir: str
+    username: str = ""
+    password: str = ""
+    shared_folder: str = ""
+    work_dir: str = ""
     host: str
     port: int = 445
 
@@ -33,7 +33,7 @@ class SMBConnector:
         username: str | None = None,
         password: str | None = None,
         host: str | None = None,
-        port: str | None = None,
+        port: int | None = None,
         shared_folder: str | None = None,
         work_dir: str | None = None,
     ):
