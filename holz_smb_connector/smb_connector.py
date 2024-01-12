@@ -26,30 +26,26 @@ class SMBFile:
 
 
 class SMBConnector:
-    settings: SMBSettings | None = SMBSettings()
-
     def __init__(
         self,
-        username: str | None = None,
-        password: str | None = None,
-        host: str | None = None,
-        port: int | None = None,
-        shared_folder: str | None = None,
-        work_dir: str | None = None,
+        username: str,
+        password: str,
+        host: str,
+        shared_folder: str,
+        port: int = 445,
+        work_dir: str = "",
     ):
         self.conn = SMBConnection(
-            username=username if username else self.settings.username.strip(),
-            password=password if password else self.settings.password.strip(),
+            username=username,
+            password=password,
             my_name="server_host",
             remote_name="target_host",
             is_direct_tcp=True,
         )
-        self.shared_folder = (
-            shared_folder if shared_folder else self.settings.shared_folder.strip()
-        )
-        self.work_dir = work_dir if work_dir else self.settings.work_dir.strip()
-        self.host = host if host else self.settings.host.strip()
-        self.port = port if port else self.settings.port
+        self.shared_folder = shared_folder
+        self.work_dir = work_dir
+        self.host = host
+        self.port = port
 
     def __enter__(self):
         assert self.conn.connect(ip=self.host, port=self.port)
