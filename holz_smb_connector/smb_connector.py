@@ -9,15 +9,6 @@ from smb.smb_structs import OperationFailure
 from smb.SMBConnection import SMBConnection
 
 
-class SMBSettings(BaseSettings):
-    username: str = ""
-    password: str = ""
-    shared_folder: str = ""
-    work_dir: str = ""
-    host: str
-    port: int = 445
-
-
 @dataclass
 class SMBFile:
     name: str
