@@ -74,8 +74,10 @@ class SMBConnector:
             file_obj.close()
 
     def store_file(self, path: str, file_obj: IO) -> bool:
-        full_path = "/".join([self.work_dir, path])
-        print(f"====<><>< {full_path}")
+        if self.work_dir:
+            full_path = "/".join([self.work_dir, path])
+        else:
+            full_path = path
         bytes_count = self.conn.storeFile(self.shared_folder, full_path, file_obj)
         if bytes_count:
             return True
