@@ -1,3 +1,4 @@
+import os
 import tempfile
 from collections.abc import Iterator
 from contextlib import contextmanager
@@ -9,14 +10,6 @@ from smb.smb_structs import OperationFailure
 from smb.SMBConnection import SMBConnection
 
 
-class SMBSettings(BaseSettings):
-    username: str = ""
-    password: str = ""
-    shared_folder: str = ""
-    work_dir: str = ""
-    host: str = ""
-    port: int = 445
-
 
 @dataclass
 class SMBFile:
@@ -26,31 +19,27 @@ class SMBFile:
 
 
 class SMBConnector:
-    settings: SMBSettings | None = None
-    smb_settings = SMBSettings()
 
     def __init__(
         self,
-        username: str | None = None,
-        password: str | None = None,
-        host: str | None = None,
-        port: int | None = None,
-        shared_folder: str | None = None,
-        work_dir: str | None = None,
+        username: str,
+        password: str,
+        host: str,
+        shared_folder: str,
+        port: int = 445,
+        work_dir: str = "",
     ):
         self.conn = SMBConnection(
-            username=username if username else self.smb_settings.username.strip(),
-            password=password if password else self.smb_settings.password.strip(),
+            username=username,
+            password=password,
             my_name="server_host",
             remote_name="target_host",
             is_direct_tcp=True,
         )
-        self.shared_folder = (
-            shared_folder if shared_folder else self.smb_settings.shared_folder.strip()
-        )
-        self.work_dir = work_dir if work_dir else self.smb_settings.work_dir.strip()
-        self.host = host if host else self.smb_settings.host.strip()
-        self.port = port if port else self.smb_settings.port
+        self.shared_folder = shared_folder
+        self.work_dir = work_dir if work_dir else ""
+        self.host = host
+        self.port = port
 
     def __enter__(self):
         assert self.conn.connect(ip=self.host, port=self.port)
@@ -60,7 +49,7 @@ class SMBConnector:
         self.conn.close()
 
     def list_dir(self, path: str = "") -> list[SMBFile]:
-        full_path = "/".join([self.work_dir, path])
+        full_path = os.path.join(self.work_dir, path)
         _files_list = self.conn.listPath(self.shared_folder, full_path)
         files_list = [
             SMBFile(
@@ -87,7 +76,10 @@ class SMBConnector:
             file_obj.close()
 
     def store_file(self, path: str, file_obj: IO) -> bool:
-        full_path = "/".join([self.work_dir, path])
+        if self.work_dir:
+            full_path = "/".join([self.work_dir, path])
+        else:
+            full_path = path
         bytes_count = self.conn.storeFile(self.shared_folder, full_path, file_obj)
         if bytes_count:
             return True
