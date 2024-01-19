@@ -1,3 +1,4 @@
+import os
 import tempfile
 from collections.abc import Iterator
 from contextlib import contextmanager
@@ -46,7 +47,7 @@ class SMBConnector:
         self.conn.close()
 
     def list_dir(self, path: str = "") -> list[SMBFile]:
-        full_path = "/".join([self.work_dir, path])
+        full_path = os.path.join(self.work_dir, path)
         _files_list = self.conn.listPath(self.shared_folder, full_path)
         files_list = [
             SMBFile(
