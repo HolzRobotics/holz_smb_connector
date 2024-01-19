@@ -10,6 +10,7 @@ from smb.smb_structs import OperationFailure
 from smb.SMBConnection import SMBConnection
 
 
+
 @dataclass
 class SMBFile:
     name: str
@@ -18,6 +19,7 @@ class SMBFile:
 
 
 class SMBConnector:
+
     def __init__(
         self,
         username: str,
