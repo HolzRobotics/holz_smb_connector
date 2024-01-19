@@ -35,7 +35,7 @@ class SMBConnector:
             is_direct_tcp=True,
         )
         self.shared_folder = shared_folder
-        self.work_dir = work_dir
+        self.work_dir = work_dir if work_dir else ""
         self.host = host
         self.port = port
 
@@ -75,6 +75,7 @@ class SMBConnector:
 
     def store_file(self, path: str, file_obj: IO) -> bool:
         full_path = "/".join([self.work_dir, path])
+        print(f"====<><>< {full_path}")
         bytes_count = self.conn.storeFile(self.shared_folder, full_path, file_obj)
         if bytes_count:
             return True
