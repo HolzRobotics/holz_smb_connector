@@ -10,7 +10,6 @@ from smb.smb_structs import OperationFailure
 from smb.SMBConnection import SMBConnection
 
 
-
 @dataclass
 class SMBFile:
     name: str
@@ -18,16 +17,22 @@ class SMBFile:
     read_only: bool
 
 
+class SMBSettings(BaseSettings):
+    host: str = ""
+    port: int = 445
+
+
 class SMBConnector:
+    settings: SMBSettings | None = SMBSettings()
 
     def __init__(
-        self,
-        username: str,
-        password: str,
-        host: str,
-        shared_folder: str,
-        port: int = 445,
-        work_dir: str = "",
+            self,
+            username: str,
+            password: str,
+            host: str,
+            shared_folder: str,
+            port: int = 445,
+            work_dir: str = "",
     ):
         self.conn = SMBConnection(
             username=username,
