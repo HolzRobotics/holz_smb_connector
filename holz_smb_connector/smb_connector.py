@@ -18,33 +18,42 @@ class SMBFile:
 
 
 class SMBSettings(BaseSettings):
+    username: str = ""
+    password: str = ""
+    shared_folder: str = ""
+    work_dir: str = ""
+    host: str = ""
+    port: int = 445
+
+
+class SMBSettings(BaseSettings):
     host: str = ""
     port: int = 445
 
 
 class SMBConnector:
-    settings: SMBSettings | None = SMBSettings()
+    settings: SMBSettings = None
 
     def __init__(
-            self,
-            username: str,
-            password: str,
-            host: str,
-            shared_folder: str,
-            port: int = 445,
-            work_dir: str = "",
+        self,
+        username: str = None,
+        password: str = None,
+        host: str = None,
+        shared_folder: str = None,
+        port: int = 445,
+        work_dir: str = "",
     ):
         self.conn = SMBConnection(
-            username=username,
-            password=password,
+            username=username if username else self.settings.username.strip(),
+            password=password if password else self.settings.password.strip(),
             my_name="server_host",
             remote_name="target_host",
             is_direct_tcp=True,
         )
-        self.shared_folder = shared_folder
-        self.work_dir = work_dir if work_dir else ""
-        self.host = host
-        self.port = port
+        self.shared_folder = shared_folder if shared_folder else self.settings.shared_folder.strip()
+        self.work_dir = work_dir if work_dir else self.settings.work_dir.strip()
+        self.host = host if host else self.settings.host.strip()
+        self.port = port if port else self.settings.port
 
     def __enter__(self):
         assert self.conn.connect(ip=self.host, port=self.port)
