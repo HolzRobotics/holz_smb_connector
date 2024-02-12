@@ -26,11 +26,6 @@ class SMBSettings(BaseSettings):
     port: int = 445
 
 
-class SMBSettings(BaseSettings):
-    host: str = ""
-    port: int = 445
-
-
 class SMBConnector:
     settings: SMBSettings = None
 
