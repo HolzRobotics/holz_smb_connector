@@ -31,10 +31,10 @@ class SMBConnector:
 
     def __init__(
         self,
-        host: str = "",
-        username: str = "",
-        password: str = "",
-        shared_folder: str = "",
+        username: str = None,
+        password: str = None,
+        host: str = None,
+        shared_folder: str = None,
         port: int = 445,
         work_dir: str = "",
     ):
