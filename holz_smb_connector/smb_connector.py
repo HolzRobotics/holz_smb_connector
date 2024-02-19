@@ -27,7 +27,7 @@ class SMBSettings(BaseSettings):
 
 
 class SMBConnector:
-    settings: SMBSettings = None
+    settings: SMBSettings = SMBSettings()
 
     def __init__(
         self,
