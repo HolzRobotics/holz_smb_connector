@@ -51,7 +51,7 @@ class SMBConnector:
         self.port = port if port else self.settings.port
 
     def __enter__(self):
-        assert self.conn.connect(ip=self.host, port=self.port)
+        assert self.conn.connect(ip=self.host, port=self.port), "UNABLE CONNECTION"
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
