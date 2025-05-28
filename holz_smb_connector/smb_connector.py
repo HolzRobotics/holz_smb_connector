@@ -15,6 +15,7 @@ class SMBFile:
     name: str
     is_dir: bool
     read_only: bool
+    full_path: str
 
 
 class SMBSettings(BaseSettings):
@@ -61,12 +62,16 @@ class SMBConnector:
 
     def list_dir(self, path: str = "") -> list[SMBFile]:
         full_path = os.path.join(self.work_dir, path)
+        return self.full_path_list_dir(full_path=full_path)
+
+    def full_path_list_dir(self, full_path: str) -> list[SMBFile]:
         _files_list = self.conn.listPath(self.shared_folder, full_path)
         files_list = [
             SMBFile(
                 name=f.filename,
                 is_dir=f.isDirectory,
                 read_only=f.isReadOnly,
+                full_path=os.path.join(full_path, f.filename),
             )
             for f in _files_list
         ]
@@ -98,6 +103,9 @@ class SMBConnector:
 
     def delete_files(self, file_pattern: str, delete_folders: bool = False) -> None:
         full_pattern = "/".join([self.work_dir, file_pattern])
+        self.conn.deleteFiles(self.shared_folder, full_pattern, delete_folders)
+
+    def delete_files_by_full_pattern(self, full_pattern: str, delete_folders: bool = False) -> None:
         self.conn.deleteFiles(self.shared_folder, full_pattern, delete_folders)
 
     def create_dir(self, path: str) -> None:
