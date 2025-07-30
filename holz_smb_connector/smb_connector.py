@@ -88,7 +88,7 @@ class SMBConnector:
             guid=uuid.uuid4(),
             server_name=self.host,
             port=self.port,
-            require_signing=True,
+            require_signing=False,
         )
         self._connection.connect(dialect=Dialects.SMB_3_1_1)
 
