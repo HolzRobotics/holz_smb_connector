@@ -1,4 +1,5 @@
 import fnmatch
+import logging
 import os
 import pathlib
 import tempfile
@@ -40,7 +41,11 @@ class OpenContextManager:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self.handle:
-            self.handle.close()
+            try:
+                self.handle.close()
+            except Exception as e:
+                if exc_type is None:
+                    raise
 
 
 @dataclass
@@ -71,7 +76,12 @@ class SMBConnector:
         shared_folder: str = settings.shared_folder.strip(),
         port: int = settings.port,
         work_dir: str = settings.work_dir.strip(),
+        smb_logger: logging.Logger | None = None,
+        debug: bool = False,
     ):
+        self.debug = debug
+        self.smb_logger = smb_logger or logging.getLogger("smb_connector")
+
         self.username = username
         self.password = password
         self.shared_folder = shared_folder
@@ -114,14 +124,27 @@ class SMBConnector:
         exc_val: BaseException | None,
         exc_tb: types.TracebackType | None,
     ):
-        if self._tree:
-            self._tree.disconnect()
+        if self.debug:
+            self._log_open_descriptors("Before cleanup")
 
-        if self._session:
-            self._session.disconnect()
+        try:
+            if self._tree:
+                self._tree.disconnect()
+            if self._session:
+                self._session.disconnect()
+            if self._connection:
+                self._connection.disconnect()
+        finally:
+            if self.debug:
+                self._log_open_descriptors("After cleanup")
 
-        if self._connection:
-            self._connection.disconnect()
+    def _log_open_descriptors(self, message: str):
+        try:
+            if os.path.exists('/proc/self/fd'):
+                count = len(os.listdir('/proc/self/fd'))
+                self.smb_logger.info(f"{message} - Open FDs: {count}")
+        except Exception as e:
+            self.smb_logger.info(f"Could not check file descriptors: {e}")
 
     def _normalize_path(self, path: str) -> str:
         if self.work_dir and not path.startswith(self.work_dir):
