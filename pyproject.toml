@@ -10,6 +10,7 @@ packages = [{include = "holz_smb_connector"}]
 python = "^3.11"
 pysmb = "^1.2.9.1"
 pydantic-settings = "^2.0.3"
+smbprotocol = "^1.15.0"
 
 
 [tool.poetry.group.dev.dependencies]
